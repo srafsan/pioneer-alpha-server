@@ -38,6 +38,22 @@ app.post("/products", (req, res) => {
   res.status(201).json(newProduct);
 });
 
+// PUT (update) a product by ID
+app.put("/products/:id", (req, res) => {
+  const productId = Number(req.params.id);
+  const updatedProduct = req.body;
+
+  const productIndex = products.findIndex((p) => p.id === productId);
+
+  if (productIndex === -1) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  products[productIndex] = updatedProduct;
+
+  res.json(updatedProduct);
+});
+
 // DELETE a product by ID
 app.delete("/products/:id", (req, res) => {
   const productId = Number(req.params.id);
