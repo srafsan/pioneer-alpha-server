@@ -1,11 +1,29 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const PORT = 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.post("/create-payment-intent", async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error("Error creating payment intent:", error);
+    res.status(500).json({ error: "Failed to create payment intent" });
+  }
+});
 
 // Runtime array to store products
 let products = [];
